@@ -2,4 +2,4 @@
 FROM alpine:3.15
 LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
-RUN  apk  update && export DEBIAN_FRONTEND=noninteractive     &&  apk  add -y  zsh tmux 
+RUN  apk  update && export DEBIAN_FRONTEND=noninteractive     &&  apk  add  zsh tmux 

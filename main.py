@@ -67,7 +67,7 @@ FROM {}:{}
 LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
 RUN {} update && export DEBIAN_FRONTEND=noninteractive \
-    && {} {} -y {}
+    && {} {} {}
 """
 
 github_cicd_template = """
@@ -110,7 +110,7 @@ for (image_name,image_infos) in devcontainer_image_info_test_map.items():
         image_version = image_info["version"]
         pkg_mgt = image_info["pkg_mgt"]
         need_install_pks = image_info["need_install_pks"]
-        install_pkg_verb = "add" if ("alpine" in image_name or "alpine" in image_version) else "install"
+        install_pkg_verb = "add" if ("alpine" in image_name or "alpine" in image_version) else "install -y"
         dockerfile_content = dockerfile_template.format(image_name, image_version, pkg_mgt, pkg_mgt, install_pkg_verb, need_install_pks)
         # print(dockerfile_content)
         with open(f"{folder}/Dockerfile.build-{image_version}", "w", encoding='utf-8') as dockerfile:
