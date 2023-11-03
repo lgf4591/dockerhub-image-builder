@@ -90,7 +90,7 @@ jobs:
           docker build -t lgf4591/{}:{} -f devcontainer/{}/Dockerfile.build-{} .
       - name: Login to Registry
         # run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ secrets.DOCKER_USERNAME }}  --password-stdin
+        run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login --username ${{ secrets.DOCKER_USERNAME }}  --password-stdin
       - name: Push Image
         run: |
           docker push lgf4591/{}:{}
@@ -116,7 +116,7 @@ for (image_name,image_infos) in devcontainer_image_info_test_map.items():
         with open(f"{folder}/Dockerfile.build-{image_version}", "w", encoding='utf-8') as dockerfile:
             dockerfile.write(dockerfile_content)
             
-        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version)
+        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}")
         with open(f".github/workflows/{image_name}_{image_version}.yml", "w", encoding='utf-8') as yamlfile:
             yamlfile.write(github_cicd_content)
     # print(f"create {image_name} github actions file")
