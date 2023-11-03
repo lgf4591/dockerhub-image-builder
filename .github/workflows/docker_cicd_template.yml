@@ -1,0 +1,23 @@
+name: Docker Image CI/CD Template
+on:
+  push:
+    branches: [ main ]
+    paths:   # 这里是用来指定哪个文件更改，才会触发的
+      - 'devcontainer/debian/Dockerfile.build-latest'               # 包括路径
+      - 'devcontainer/common_build.sh'                              # 包括路径
+      - '!docs/**'                                                  # 排除路径
+jobs:
+  # 构建并上传 Docker镜像
+  build: 
+    runs-on: ubuntu-latest # 依赖的环境      
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Image
+        run: |
+          docker build -t lgf4591/debian:latest -f devcontainer/debian/Dockerfile.build-latest .
+      - name: Login to Registry
+        run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push Image
+        run: |
+          docker push lgf4591/debian:latest
+          
