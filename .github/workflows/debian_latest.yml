@@ -1,0 +1,5 @@
+
+FROM debian:latest
+LABEL maintainer="lgf4591@outlook.com"
+RUN mkdir -p /workspace
+RUN  apt-get  update && export DEBIAN_FRONTEND=noninteractive     &&  apt-get  install -y  zsh tmux 
