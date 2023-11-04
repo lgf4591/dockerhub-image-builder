@@ -1,6 +1,13 @@
 # dockerhub-image-builder
 dockerhub-image-builder
 
+## TEST
+```bash
+
+docker run --rm -it lgf4591/debian:latest zsh
+
+```
+
 ## [devcontainers templates](https://github.com/devcontainers/templates)
 
 
@@ -29,3 +36,12 @@ curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install 
 ```
 
 
+## [oh-my-tmux](https://github.com/gpakosz/.tmux)
+```bash
+
+cd
+git clone https://github.com/gpakosz/.tmux.git
+ln -s -f .tmux/.tmux.conf
+cp .tmux/.tmux.conf.local .
+
+```
