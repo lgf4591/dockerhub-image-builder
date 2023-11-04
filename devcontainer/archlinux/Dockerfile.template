@@ -1,0 +1,70 @@
+# docker pull archlinux
+FROM archlinux:latest
+LABEL maintainer="LGF"
+USER root
+WORKDIR /root
+
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo '$TZ' > /etc/timezone
+
+# Install Docker from Arch repos
+RUN pacman -Syyu && \
+    pacman -Syy --noprogressbar --noconfirm --needed sudo ca-certificates lxc e2fsprogs docker curl wget && \
+    pacman -Syy --noprogressbar --noconfirm --needed lsof procps zsh tmux fish csh tcsh ksh bash telnet iputils-ping && \
+    pacman -Syy --noprogressbar --noconfirm --needed nginx vim neovim nano emacs fzf fd-find bat nnn ranger && \
+    pacman -Syy --noprogressbar --noconfirm --needed git openssh-server net-tools autojump python3 python3-pip
+
+
+
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# install oh-my-zsh
+RUN git clone https://github.com/ohmyzsh/ohmyzsh.git && ./ohmyzsh/tools/install.sh && \
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && \
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && \
+    git clone https://github.com/paulirish/git-open.git $ZSH_CUSTOM/plugins/git-open && \
+    sed -i 's/^plugins=(/plugins=(docker docker-compose python npm zsh-autosuggestions zsh-syntax-highlighting z /' ~/.zshrc && \
+    sed -i 's/^ZSH_THEME="robbyrussell"/ZSH_THEME="juanghurtado"/' ~/.zshrc
+
+#  install fail: warning: An error occurred while redirecting file '/dev/tty'
+# RUN git clone https://gitee.com/mamh-mixed/oh-my-fish.git && ./oh-my-fish/bin/install --offline
+RUN git clone https://github.com/oh-my-fish/oh-my-fish.git  && ./oh-my-fish/bin/install --offline --noninteractive
+
+RUN git clone https://github.com/ohmybash/oh-my-bash.git && bash ./oh-my-bash/tools/install.sh
+
+RUN cd && \
+    git clone https://github.com/gpakosz/.tmux.git && \
+    ln -s -f .tmux/.tmux.conf && \
+    cp .tmux/.tmux.conf.local . && \
+    cd
+
+
+# Install the magic wrapper.
+ADD ./DockerFiles/wrapdocker /usr/local/bin/wrapdocker
+RUN chmod +x /usr/local/bin/wrapdocker
+
+
+RUN echo "docker-arch-latest" > /etc/hostname
+
+# ADD start.sh /usr/bin
+ADD ./DockerFiles/.alias.sh /root
+ADD ./DockerFiles/.exports.sh /root
+ADD ./DockerFiles/.functions.sh /root
+ADD ./DockerFiles/.npmrc /root
+ADD ./DockerFiles/.vimrc /root
+ADD ./DockerFiles/.nanorc /root
+ADD ./DockerFiles/.gitconfig /root
+
+RUN echo "source /root/.alias.sh" >> /root/.zshrc && \
+    echo "source /root/.alias.sh" >> /root/.bashrc && \
+    echo "source /root/.exports.sh" >> /root/.zshrc && \
+    echo "source /root/.exports.sh" >> /root/.bashrc && \
+    echo "source /root/.functions.sh" >> /root/.zshrc && \
+    echo "source /root/.functions.sh" >> /root/.bashrc
+
+# RUN chmod +x /usr/bin/start.sh
+
+EXPOSE 80
+
+# ENTRYPOINT ["/usr/bin/start.sh"]

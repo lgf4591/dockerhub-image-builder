@@ -1,0 +1,8 @@
+FROM lgf136/ubuntu:20.04
+LABEL maintainer="LGF"
+USER root
+WORKDIR /root
+RUN apt install -y sudo && curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+RUN apt install -y nodejs
+RUN apt install -y unzip && curl https://bun.sh/install | bash
+RUN npm i -g yarn pnpm cnpm n ts-node typescript && npm cache clean --force

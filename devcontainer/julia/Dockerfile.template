@@ -1,0 +1,12 @@
+# docker pull julia:latest
+# docker pull julia:1-bullseye
+# docker pull julia:1.9-bullseye
+# docker pull julia:1.9.3
+# docker pull julia:1.9.3-bullseye
+# docker pull julia:bullseye
+
+FROM julia:latest
+LABEL maintainer="LGF"
+USER root
+WORKDIR /root
+ENV TZ=Asia/Shanghai

@@ -1,0 +1,5 @@
+FROM bitnami/dotnet-sdk:latest
+LABEL maintainer="LGF"
+USER root
+WORKDIR /root
+ENV TZ=Asia/Shanghai

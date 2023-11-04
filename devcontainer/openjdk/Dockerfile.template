@@ -1,0 +1,17 @@
+
+# docker pull openjdk:22-oracle
+# docker pull openjdk:22-oraclelinux8
+# docker pull openjdk:22-slim
+# docker pull openjdk:22-slim-bullseye
+# docker pull openjdk:22-jdk
+# docker pull openjdk:22-jdk-bullseye
+# docker pull openjdk:22-jdk-oracle
+# docker pull openjdk:22-jdk-oraclelinux8
+# docker pull openjdk:22-jdk-slim
+# docker pull openjdk:22-jdk-slim-bullseye
+
+FROM openjdk:22-jdk-bullseye
+LABEL maintainer="LGF"
+USER root
+WORKDIR /root
+ENV TZ=Asia/Shanghai
