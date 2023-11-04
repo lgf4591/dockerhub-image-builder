@@ -84,9 +84,10 @@ dockerfile_template = """
 FROM {}:{}
 LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
+COPY build.sh /workspace
 RUN {} update && export DEBIAN_FRONTEND=noninteractive \
     && {} {} {}
-RUN sh build.sh
+RUN sh /workspace/build.sh
 """
 
 github_cicd_template = """
