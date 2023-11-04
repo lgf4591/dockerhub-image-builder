@@ -1,7 +1,16 @@
 
 FROM alpine:latest
 LABEL maintainer="lgf4591@outlook.com"
+
+USER root
+WORKDIR /root
+
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo '$TZ' > /etc/timezone
+
+RUN cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+
 RUN mkdir -p /workspace
 COPY ./devcontainer/alpine/build.sh /workspace
-RUN  apk  update && export DEBIAN_FRONTEND=noninteractive     &&  apk  add  curl wget bash zsh fish tmux git 
+RUN  apk  update && export DEBIAN_FRONTEND=noninteractive     &&  apk  add --no-cache -U  curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev  fish neovim nano emacs fzf bat nnn ranger 
 RUN sh /workspace/build.sh

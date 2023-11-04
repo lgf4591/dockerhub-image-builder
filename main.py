@@ -1,7 +1,7 @@
 
 import os
 
-devcontainer_image_info_map = {
+devcontainer_images_map = {
     "alpine": [
                 {
                     "version": "3.15",
@@ -14,50 +14,39 @@ devcontainer_image_info_map = {
     "ubuntu": ["14.04","16.04","18.04","20.04","22.04","latest"],
     "dotnet": ["latest"],
     "golang": ["latest"],
-    "java": ["latest"],
+    "openjdk": ["latest"],
     "node": ["latest"],
     "python": ["latest"],
-    "R": ["latest"],
     "julia": ["latest"],
     "rust": ["latest"]
 }
 
 
-devcontainer_image_info_test_map = {
-    "debian": [
-                {
-                    "version": "latest",
-                    "pkg_mgt": " apt-get ",
-                    "need_install_pks": " curl wget bash zsh fish tmux git "
-                }
-            ],
-    "alpine": [
-                {
-                    "version": "3.15",
-                    "pkg_mgt": " apk ",
-                    "need_install_pks": " curl wget bash zsh fish tmux git "
-                },
-                {
-                    "version": "3.16",
-                    "pkg_mgt": " apk ",
-                    "need_install_pks": " curl wget bash zsh fish tmux git "
-                },
-                {
-                    "version": "3.17",
-                    "pkg_mgt": " apk ",
-                    "need_install_pks": " curl wget bash zsh fish tmux git "
-                },
-                {
-                    "version": "3.18",
-                    "pkg_mgt": " apk ",
-                    "need_install_pks": " curl wget bash zsh fish tmux git "
-                },
-                {
-                    "version": "latest",
-                    "pkg_mgt": " apk ",
-                    "need_install_pks": " curl wget bash zsh fish tmux git "
-                }
-            ]
+devcontainer_images_need_to_build_map = {
+    "alpine": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "latest",
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+    "debian": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's#http://deb.debian.org#https://mirrors.ustc.edu.cn#g' /etc/apt/sources.list && sed -i 's|security.debian.org/debian-security|mirrors.ustc.edu.cn/debian-security|g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "latest",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
 }
 
 
@@ -101,6 +90,15 @@ echo "will finish special steps for {} image next!!!"
 dockerfile_template = """
 FROM {}:{}
 LABEL maintainer="lgf4591@outlook.com"
+
+USER root
+WORKDIR /root
+
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo '$TZ' > /etc/timezone
+
+RUN {}
+
 RUN mkdir -p /workspace
 COPY ./devcontainer/{}/build.sh /workspace
 RUN {} update && export DEBIAN_FRONTEND=noninteractive \
@@ -136,7 +134,7 @@ jobs:
 
 # print(devcontainer_image_version_map["ubuntu"])
 
-for (image_name,image_infos) in devcontainer_image_info_test_map.items():
+for (image_name,image_infos) in devcontainer_images_need_to_build_map.items():
     folder = f"devcontainer/{image_name}"
     folder_is_existed = os.path.exists(folder)
     if not folder_is_existed:
@@ -144,12 +142,17 @@ for (image_name,image_infos) in devcontainer_image_info_test_map.items():
         print(f"created {folder} folder successfully!!!")
     else:
         print(f"{folder} folder is existed!!!")
+    
+    common_need_install_pkgs = devcontainer_images_need_to_build_map[image_name]["common_need_install_pkgs"]
+    pkg_mgt = devcontainer_images_need_to_build_map[image_name]["pkg_mgt"]
+    change_mirrir_command = devcontainer_images_need_to_build_map[image_name]["change_mirrir_command"]
+    image_infos = devcontainer_images_need_to_build_map[image_name]["image_info_dict"]
     for image_info in image_infos:
         image_version = image_info["version"]
-        pkg_mgt = image_info["pkg_mgt"]
-        need_install_pks = image_info["need_install_pks"]
-        install_pkg_verb = "add" if ("alpine" in image_name or "alpine" in image_version) else "install -y"
-        dockerfile_content = dockerfile_template.format(image_name, image_version, image_name, pkg_mgt, pkg_mgt, install_pkg_verb, need_install_pks)
+        special_need_install_pkgs = image_info["special_need_install_pkgs"]
+        need_install_pks = common_need_install_pkgs + special_need_install_pkgs
+        install_pkg_verb = "add --no-cache -U" if ("alpine" in image_name or "alpine" in image_version) else "install -y"
+        dockerfile_content = dockerfile_template.format(image_name, image_version, change_mirrir_command, image_name, pkg_mgt, pkg_mgt, install_pkg_verb, need_install_pks)
         # print(dockerfile_content)
         with open(f"{folder}/Dockerfile.build-{image_version}", "w", encoding='utf-8') as dockerfile:
             dockerfile.write(dockerfile_content)
