@@ -42,7 +42,7 @@ devcontainer_images_need_to_build_map = {
                 "image_info_dict": 
                     [
                         {
-                            "version": "latest",
+                            "version": "11",
                             "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
                         }
                     ]
