@@ -28,34 +28,34 @@ devcontainer_image_info_test_map = {
                 {
                     "version": "latest",
                     "pkg_mgt": " apt-get ",
-                    "need_install_pks": " zsh tmux "
+                    "need_install_pks": " curl wget bash zsh fish tmux git "
                 }
             ],
     "alpine": [
                 {
                     "version": "3.15",
                     "pkg_mgt": " apk ",
-                    "need_install_pks": " zsh tmux "
+                    "need_install_pks": " curl wget bash zsh fish tmux git "
                 },
                 {
                     "version": "3.16",
                     "pkg_mgt": " apk ",
-                    "need_install_pks": " zsh tmux "
+                    "need_install_pks": " curl wget bash zsh fish tmux git "
                 },
                 {
                     "version": "3.17",
                     "pkg_mgt": " apk ",
-                    "need_install_pks": " zsh tmux "
+                    "need_install_pks": " curl wget bash zsh fish tmux git "
                 },
                 {
                     "version": "3.18",
                     "pkg_mgt": " apk ",
-                    "need_install_pks": " zsh tmux "
+                    "need_install_pks": " curl wget bash zsh fish tmux git "
                 },
                 {
                     "version": "latest",
                     "pkg_mgt": " apk ",
-                    "need_install_pks": " zsh tmux "
+                    "need_install_pks": " curl wget bash zsh fish tmux git "
                 }
             ]
 }
@@ -68,6 +68,7 @@ LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
 RUN {} update && export DEBIAN_FRONTEND=noninteractive \
     && {} {} {}
+RUN sh ../common_build.sh
 """
 
 github_cicd_template = """
