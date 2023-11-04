@@ -3,4 +3,4 @@ FROM alpine:3.17
 LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
 RUN  apk  update && export DEBIAN_FRONTEND=noninteractive     &&  apk  add  curl wget bash zsh fish tmux git 
-RUN sh ../common_build.sh
+RUN sh build.sh

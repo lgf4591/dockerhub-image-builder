@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:   # 这里是用来指定哪个文件更改，才会触发的
       - 'devcontainer/alpine/Dockerfile.build-3.15'               # 包括路径
-      - 'devcontainer/common_build.sh'                              # 包括路径
+      - 'devcontainer/alpine/build.sh'                               # 包括路径
       - '!docs/**'                                                  # 排除路径
 jobs:
   # 构建并上传 Docker镜像

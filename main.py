@@ -61,6 +61,24 @@ devcontainer_image_info_test_map = {
 }
 
 
+build_sh_template = """
+#! /bin/sh
+# install oh-my-bash
+
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+
+# install oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# install oh-my-fish
+curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+
+
+# special steps for each image
+echo "will finish special steps for {} image next!!!"
+
+
+"""
 
 dockerfile_template = """
 FROM {}:{}
@@ -68,7 +86,7 @@ LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
 RUN {} update && export DEBIAN_FRONTEND=noninteractive \
     && {} {} {}
-RUN sh ../common_build.sh
+RUN sh build.sh
 """
 
 github_cicd_template = """
@@ -78,7 +96,7 @@ on:
     branches: [ main ]
     paths:   # 这里是用来指定哪个文件更改，才会触发的
       - 'devcontainer/{}/Dockerfile.build-{}'               # 包括路径
-      - 'devcontainer/common_build.sh'                              # 包括路径
+      - 'devcontainer/{}/build.sh'                               # 包括路径
       - '!docs/**'                                                  # 排除路径
 jobs:
   # 构建并上传 Docker镜像
@@ -117,9 +135,12 @@ for (image_name,image_infos) in devcontainer_image_info_test_map.items():
         with open(f"{folder}/Dockerfile.build-{image_version}", "w", encoding='utf-8') as dockerfile:
             dockerfile.write(dockerfile_content)
             
-        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}")
+        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}")
         with open(f".github/workflows/{image_name}_{image_version}.yml", "w", encoding='utf-8') as yamlfile:
             yamlfile.write(github_cicd_content)
     # print(f"create {image_name} github actions file")
+    build_sh_content = build_sh_template.format(image_name)
+    with open(f"{folder}/build.sh", "w", encoding='utf-8') as build_file:
+            build_file.write(build_sh_content)
     
 

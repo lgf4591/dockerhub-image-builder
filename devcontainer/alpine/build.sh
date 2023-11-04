@@ -1,3 +1,4 @@
+
 #! /bin/sh
 # install oh-my-bash
 
@@ -8,4 +9,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # install oh-my-fish
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+
+
+# special steps for each image
+echo "will finish special steps for alpine image next!!!"
+
 
