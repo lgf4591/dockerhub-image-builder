@@ -2,6 +2,6 @@
 FROM alpine:3.18
 LABEL maintainer="lgf4591@outlook.com"
 RUN mkdir -p /workspace
-COPY build.sh /workspace
+COPY ./devcontainer/alpine/build.sh /workspace
 RUN  apk  update && export DEBIAN_FRONTEND=noninteractive     &&  apk  add  curl wget bash zsh fish tmux git 
 RUN sh /workspace/build.sh
