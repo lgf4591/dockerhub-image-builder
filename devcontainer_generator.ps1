@@ -1,23 +1,23 @@
 
 
-function remove_dir ($path) {{
+function remove_dir ($path) {
     if(Test-Path $path)
-        {{
+        {
             remove-Item -Recurse -Force $path
             Write-Output "Directory $path Deleted Successfully!!!"
-        }}
-}}
+        }
+}
 
-function create_dir ($path) {{
-    if ( Test-Path $path ) {{
+function create_dir ($path) {
+    if ( Test-Path $path ) {
         Write-Output "Directory $path Exists!!!"
-    }} else {{
+    } else {
         # mkdir $path
         # New-Item -Path $path -ItemType Directory -Force
         New-Item -Path $path -ItemType Directory
         Write-Output "Directory $path Created Successfully!!!"
-    }}
-}}
+    }
+}
 
 # $devcontainer_path = ".devcontainer"
 # create_dir($devcontainer_path)
@@ -364,14 +364,14 @@ function docker_env ($docker_image = "debian", $docker_image_version = "latest")
 	$workdir = "root/code"
 
 	$devcontainer_path = ".devcontainer"
-	if ( Test-Path $devcontainer_path ) {{
+	if ( Test-Path $devcontainer_path ) {
         Write-Output "Directory $devcontainer_path Exists!!!"
-    }} else {{
+    } else {
         # mkdir $devcontainer_path
         # New-Item -Path $devcontainer_path -ItemType Directory -Force
         New-Item -Path $devcontainer_path -ItemType Directory
         Write-Output "Directory $path Created Successfully!!!"
-    }}
+    }
 
 	Copy-Item -Path ~/.ssh/id_rsa -Destination $devcontainer_path/ -Force
 	Copy-Item -Path ~/.ssh/id_rsa.pub -Destination $devcontainer_path/ -Force
