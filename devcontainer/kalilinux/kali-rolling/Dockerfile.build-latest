@@ -8,7 +8,7 @@ WORKDIR /root
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo '$TZ' > /etc/timezone
 
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's@http://http.kali.org/kali@https://mirrors.tuna.tsinghua.edu.cn/kali@g' /etc/apt/sources.list 
+RUN echo 'kalilinux will raise error if change mirror
 
 RUN mkdir -p /workspace
 COPY ./devcontainer/kalilinux/kali-rolling/build.sh /workspace

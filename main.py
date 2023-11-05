@@ -42,7 +42,8 @@ devcontainer_images_need_to_build_map = {
     "kalilinux/kali-rolling": {
                 "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
                 "pkg_mgt": " apt-get ",
-                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's@http://http.kali.org/kali@https://mirrors.tuna.tsinghua.edu.cn/kali@g' /etc/apt/sources.list ",
+                "change_mirrir_command": "echo 'kalilinux will raise error if change mirror",
+                # "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's@http://http.kali.org/kali@https://mirrors.tuna.tsinghua.edu.cn/kali@g' /etc/apt/sources.list ",
                 "image_info_dict": 
                     [
                         {
