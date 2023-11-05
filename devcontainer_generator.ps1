@@ -1,5 +1,32 @@
 
 
+function remove_dir ($path) {{
+    if(Test-Path $path)
+        {{
+            remove-Item -Recurse -Force $path
+            Write-Output "Directory $path Deleted Successfully!!!"
+        }}
+}}
+
+function create_dir ($path) {{
+    if ( Test-Path $path ) {{
+        Write-Output "Directory $path Exists!!!"
+    }} else {{
+        # mkdir $path
+        # New-Item -Path $path -ItemType Directory -Force
+        New-Item -Path $path -ItemType Directory
+        Write-Output "Directory $path Created Successfully!!!"
+    }}
+}}
+
+# $devcontainer_path = ".devcontainer"
+# create_dir($devcontainer_path)
+# Write-Output "$env_file" | Out-File -Encoding default -FilePath "$devcontainer_path/.env"
+# Write-Output "$devcontainer_json" | Out-File -Encoding default -FilePath "$devcontainer_path/devcontainer.json"
+# Write-Output "$docker_compose_yml" | Out-File -Encoding default -FilePath "$devcontainer_path/docker-compose.yml"
+# Write-Output "$dockerfile" | Out-File -Encoding default -FilePath "$devcontainer_path/Dockerfile"
+
+
 $env_file = @'
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
@@ -32,6 +59,7 @@ $devcontainer_json = @'
 				// "dracula-theme.theme-dracula",
 				// "github.github-vscode-theme",
 				// "pkief.material-icon-theme",
+				// "ms-python.python",
 				"vscode-icons-team.vscode-icons",
 				"ms-vscode-remote.vscode-remote-extensionpack",
 				"ms-azuretools.vscode-docker",
@@ -319,65 +347,87 @@ RUN chmod 600 /root/.ssh/id_rsa && chmod 644 /root/.ssh/id_rsa.pub
 WORKDIR /{2}
 
 
-# [Optional] Uncomment this section to install additional OS packages.
+# [Optional] Uncomment this section to change mirror repo.
 RUN {3}
+
+# [Optional] Uncomment this section to install additional OS packages.
+RUN {4}
 
 
 
 '@
 
+function docker_env ($docker_image = "debian", $docker_image_version = "latest") {
+	$image = $docker_image + $docker_image_version
+	$change_mirror_repo = "echo 'will change mirror repo'"
+	$install_additional_command = "echo 'install additional packages'"
+	$workdir = "root/code"
 
-
-function remove_dir ($path) {{
-    if(Test-Path $path)
-        {{
-            remove-Item -Recurse -Force $path
-            Write-Output "Directory $path Deleted Successfully!!!"
-        }}
-}}
-
-function create_dir ($path) {{
-    if ( Test-Path $path ) {{
-        Write-Output "Directory $path Exists!!!"
+	$devcontainer_path = ".devcontainer"
+	if ( Test-Path $devcontainer_path ) {{
+        Write-Output "Directory $devcontainer_path Exists!!!"
     }} else {{
-        # mkdir $path
-        # New-Item -Path $path -ItemType Directory -Force
-        New-Item -Path $path -ItemType Directory
+        # mkdir $devcontainer_path
+        # New-Item -Path $devcontainer_path -ItemType Directory -Force
+        New-Item -Path $devcontainer_path -ItemType Directory
         Write-Output "Directory $path Created Successfully!!!"
     }}
-}}
 
-# $devcontainer_path = ".devcontainer"
-# create_dir($devcontainer_path)
-# Write-Output "$env_file" | Out-File -Encoding default -FilePath "$devcontainer_path/.env"
-# Write-Output "$devcontainer_json" | Out-File -Encoding default -FilePath "$devcontainer_path/devcontainer.json"
-# Write-Output "$docker_compose_yml" | Out-File -Encoding default -FilePath "$devcontainer_path/docker-compose.yml"
-# Write-Output "$dockerfile" | Out-File -Encoding default -FilePath "$devcontainer_path/Dockerfile"
-
-function docker_env ($docker_image = "debian", $docker_image_version = "latest") {
-	$image = "lgf4591/debian".replace("lgf4591/","")
-	$arch_like = @("archlinux","majaro")
-	$alpine_like = @("alpine")
-	$debian_like = @("debian","ubuntu","node")
-	$fedora_like = @("fedora","centos","almalinux","oraclelinux","rockylinux","redhat")
-	$install_additional_command = "echo 'install additional packages'"
-	$devcontainer_path = ".devcontainer"
-	$workdir = "root/code"
 	Copy-Item -Path ~/.ssh/id_rsa -Destination $devcontainer_path/ -Force
 	Copy-Item -Path ~/.ssh/id_rsa.pub -Destination $devcontainer_path/ -Force
 	if ($docker_image.contains("lgf4591/")){
 		$workdir = "workspace"
 	}
-	if ($image -in $arch_like){
-		$install_additional_command = "pacman -Syyu && export DEBIAN_FRONTEND=noninteractive && pacman -Syy --noprogressbar --noconfirm --needed sudo ca-certificates git openssh-server net-tools curl wget vim nano"
-	} elseif ($image -in $alpine_like){
-		$install_additional_command = "apk update && export DEBIAN_FRONTEND=noninteractive && apk add --no-cache -U git openssh-server net-tools curl wget busybox-extras vim nano"
-	} elseif ($image -in $debian_like){
-		$install_additional_command = "apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends git openssh-server net-tools curl wget vim nano"
-	} elseif ($image -in $fedora_like){
-		$install_additional_command = "dnf update && export DEBIAN_FRONTEND=noninteractive && dnf -y install git openssh-server net-tools curl wget vim nano"
+
+	if ($image -match "arch|archlinux"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "alpine"){
+		Write-Output "change mirror repo"
+		$change_mirror_repo = "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories"
+	} elseif ($image -match "debian|squeeze|wheezy|jessie|stretch|buster|bullseye|bookworm"){
+		Write-Output "change mirror repo"
+		$change_mirror_repo = "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list"
+	} elseif ($image -match "ubuntu|Trusty|Xenial|Bionic|Focal|Jammy"){
+		Write-Output "change mirror repo"
+		$change_mirror_repo = "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && sed -i 's/cn.archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list"
+	} elseif ($image -match "kali"){
+		Write-Output "change mirror repo"
+		$change_mirror_repo = "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's@http://http.kali.org/kali@https://mirrors.tuna.tsinghua.edu.cn/kali@g' /etc/apt/sources.list"
+	} elseif ($image -match "centos"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "fedora"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "redhat"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "oracle"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "alma"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "rocky"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "openEuler"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "opensuse/leap"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "opensuse/tumbleweed"){
+		Write-Output "change mirror repo"
+	} elseif ($image -match "freebsd"){
+		Write-Output "change mirror repo"
 	}
-	$final_dockerfile = "$dockerfile" -f $docker_image, $docker_image_version, $workdir, $install_additional_command, $ssh_id_rsa, $ssh_id_rsa_pub
+
+	if ($image -match "arch|archlinux"){
+		$install_additional_command = "pacman -Syyu && export DEBIAN_FRONTEND=noninteractive && pacman -Syy --noprogressbar --noconfirm --needed sudo ca-certificates git openssh-server net-tools curl wget vim nano"
+	} elseif ($image -match "alpine"){
+		$install_additional_command = "apk update && export DEBIAN_FRONTEND=noninteractive && apk add --no-cache -U git openssh-server net-tools curl wget busybox-extras vim nano"
+	} elseif ($image -match "debian|squeeze|wheezy|jessie|stretch|buster|bullseye|bookworm|ubuntu|Trusty|Xenial|Bionic|Focal|Jammy|kali"){
+		$install_additional_command = "apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends git openssh-server net-tools curl wget vim nano"
+	} elseif ($image -match "centos|fedora|redhat|oracle|alma|rocky|openEuler"){
+		$install_additional_command = "dnf update && export DEBIAN_FRONTEND=noninteractive && dnf -y install git openssh-server net-tools curl wget vim nano"
+	} elseif ($image -match "opensuse"){
+		$install_additional_command = "zypper --gpg-auto-import-keys --non-interactive refresh && zypper --gpg-auto-import-keys --non-interactive update && export DEBIAN_FRONTEND=noninteractive && zypper --gpg-auto-import-keys --non-interactive install --auto-agree-with-licenses git openssh-server net-tools curl wget vim nano"
+	}
+
+	$final_dockerfile = "$dockerfile" -f $docker_image, $docker_image_version, $workdir, $change_mirror_repo, $install_additional_command
 	Write-Output "$final_dockerfile" | Out-File -Encoding default -FilePath "$devcontainer_path/Dockerfile" -Force
 	# Write-Output $final_dockerfile
 	$final_docker_compose_yml = "$docker_compose_yml" -f $workdir
@@ -389,7 +439,10 @@ function docker_env ($docker_image = "debian", $docker_image_version = "latest")
 
 }
 
-docker_env
+# docker_env  # BUG: debian:latest 版本 cannot stat '/etc/apt/sources.list': No such file or directory
+docker_env "debian" "11"
+# docker_env "ubuntu"
+# docker_env "alpine"
 # docker_env "lgf4591/debian"
 
 
