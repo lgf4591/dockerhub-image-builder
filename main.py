@@ -343,6 +343,9 @@ jobs:
 # print(devcontainer_image_version_map["ubuntu"])
 
 for (image_name,image_infos) in devcontainer_images_need_to_build_map.items():
+    github_cicd_image_name = image_name
+    if (len(image_name.split("/")) > 1):
+        github_cicd_image_name = image_name.replace("/","_")
     folder = f"devcontainer/{image_name}"
     folder_is_existed = os.path.exists(folder)
     if not folder_is_existed:
@@ -366,7 +369,7 @@ for (image_name,image_infos) in devcontainer_images_need_to_build_map.items():
             dockerfile.write(dockerfile_content)
             
         github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}")
-        with open(f".github/workflows/{image_name}_{image_version}.yml", "w", encoding='utf-8') as yamlfile:
+        with open(f".github/workflows/{github_cicd_image_name}_{image_version}.yml", "w", encoding='utf-8') as yamlfile:
             yamlfile.write(github_cicd_content)
     # print(f"create {image_name} github actions file")
     build_sh_content = build_sh_template.format(image_name)
