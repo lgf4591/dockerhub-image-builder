@@ -1,0 +1,24 @@
+
+name: python:3.11.6-slim-bullseye Docker Image CI/CD
+on:
+  push:
+    branches: [ main ]
+    paths:   # 这里是用来指定哪个文件更改，才会触发的
+      - 'devcontainer/python/Dockerfile.build-3.11.6-slim-bullseye'               # 包括路径
+      - 'devcontainer/python/build.sh'                               # 包括路径
+      - '!docs/**'                                                  # 排除路径
+jobs:
+  # 构建并上传 Docker镜像
+  build: 
+    runs-on: ubuntu-latest # 依赖的环境      
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Image
+        run: |
+          docker build -t lgf4591/python:3.11.6-slim-bullseye -f devcontainer/python/Dockerfile.build-3.11.6-slim-bullseye .
+      - name: Login to Registry
+        # run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+        run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login --username ${{ secrets.DOCKER_USERNAME }}  --password-stdin
+      - name: Push Image
+        run: |
+          docker push lgf4591/python:3.11.6-slim-bullseye

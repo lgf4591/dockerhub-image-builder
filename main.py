@@ -1,26 +1,6 @@
 
 import os
 
-devcontainer_images_map = {
-    "alpine": [
-                {
-                    "version": "3.15",
-                    "pkg_mgt": " apt-get ",
-                    "need_install_pks": " zsh tmux "
-                }
-            ],
-    "debian": ["10.6","11.5","11.6","latest"],
-    "fedora": ["latest"],
-    "ubuntu": ["14.04","16.04","18.04","20.04","22.04","latest"],
-    "dotnet": ["latest"],
-    "golang": ["latest"],
-    "openjdk": ["latest"],
-    "node": ["latest"],
-    "python": ["latest"],
-    "julia": ["latest"],
-    "rust": ["latest"]
-}
-
 
 devcontainer_images_need_to_build_map = {
     "alpine": {
@@ -43,6 +23,234 @@ devcontainer_images_need_to_build_map = {
                     [
                         {
                             "version": "11",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "ubuntu": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && sed -i 's/cn.archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "22.04",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "kalilinux/kali-rolling": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's@http://http.kali.org/kali@https://mirrors.tuna.tsinghua.edu.cn/kali@g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "latest",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "node": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "18-alpine3.18", # 18-bullseye 18-bullseye-slim
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+    "node": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "18-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "node": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "18-bullseye-slim",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "python": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "3.11.6-alpine3.18",
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+    "python": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "3.11.6-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "python": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "3.11.6-slim-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "rust": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "1.73.0-alpine3.18",
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+    "rust": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "1.73.0-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "rust": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "1.73.0-slim-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "julia": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "1.9.3-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "golang": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "1.21.3-alpine3.18",
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+    "golang": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "1.21.3-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "openjdk": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "22-jdk-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "openjdk": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "22-jdk-slim-bullseye",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "denoland/deno": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "alpine",
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+    "denoland/deno": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "debian",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "denoland/deno": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && sed -i 's/cn.archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "ubuntu",
                             "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
                         }
                     ]
