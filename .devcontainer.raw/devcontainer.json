@@ -1,10 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/docker-from-docker-compose
 {
-	"name": "debian",
+	"name": "DevContainer",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/root/code",
+	"workspaceFolder": "/workspace",
 	// "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
 	// Use this environment variable if you need to bind mount your local source code into a new container.
 	// 不晓得咋用？
@@ -70,7 +70,7 @@
 				],
 				// "workbench.colorTheme": "One Dark Pro Darker",
 				// "workbench.iconTheme": "material-icon-theme",
-				"editor.fontSize": 14,
+				"editor.fontSize": 16,
 				"editor.fontFamily": "'Fira Code', 'Cascadia Code',Consolas, 'Courier New', monospace",
 				"debug.console.fontFamily": "Hack Nerd Font",
 				"terminal.integrated.fontFamily": "Hack Nerd Font",

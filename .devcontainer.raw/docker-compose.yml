@@ -15,9 +15,9 @@ services:
     # hostname: '192.168.1.4'
     # network_mode: bridge
     volumes:
-      - '..:/root/code'
-      # - /usr/bin/docker:/usr/bin/docker
-      # - /var/run/docker.sock:/var/run/docker.sock
+      - '..:/workspace'
+      # - /usr/bin/docker:/usr/bin/docker  # 为容器内部提供 docker 命令行工具（这个随意）
+      # - /var/run/docker.sock:/var/run/docker.sock  # 容器内部通过 unix socket 使用宿主机 docker
     # ports:
     #   - 80:80
     #   - 8181:3000
@@ -49,4 +49,3 @@ services:
 
 # volumes:
 #   postgres-data:
-

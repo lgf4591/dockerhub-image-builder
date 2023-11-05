@@ -1,14 +1,17 @@
-FROM lgf4591/debian:11
+FROM debian:latest
 LABEL maintainer="LGF"
 
 USER root
-WORKDIR /workspace
 
-# [Optional] Uncomment to install a different version of Python than the default
-# RUN conda install -y python=3.6 \
-#     && pip install --no-cache-dir pipx \
-#     && pipx reinstall-all
+RUN mkdir -p /root/code && mkdir -p /root/.ssh
+COPY id_rsa* /root/.ssh/
+RUN chmod 600 /root/.ssh/id_rsa && chmod 644 /root/.ssh/id_rsa.pub
+
+WORKDIR /root/code
+
 
 # [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install --no-install-recommends git openssh-server net-tools curl wget vim nano
+
+
+
