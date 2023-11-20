@@ -377,7 +377,8 @@ jobs:
 for (image_name,image_infos) in devcontainer_images_need_to_build_map.items():
     github_cicd_image_name = image_name
     if (len(image_name.split("/")) > 1):
-        github_cicd_image_name = image_name.replace("/","_")
+        # github_cicd_image_name = image_name.replace("/","_")
+        github_cicd_image_name = image_name.split("/")[1]
     folder = f"devcontainer/{image_name}"
     folder_is_existed = os.path.exists(folder)
     if not folder_is_existed:
@@ -400,7 +401,7 @@ for (image_name,image_infos) in devcontainer_images_need_to_build_map.items():
         with open(f"{folder}/Dockerfile.build-{image_version}", "w", encoding='utf-8') as dockerfile:
             dockerfile.write(dockerfile_content)
             
-        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}").replace("{ github.repository_owner }",r"{{ github.repository_owner }}").replace("{ secrets.GHCR_TOKEN }",r"{{ secrets.GHCR_TOKEN }}")
+        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, github_cicd_image_name, image_version, image_name, image_version, github_cicd_image_name, image_version, github_cicd_image_name, image_version, image_name, image_version, github_cicd_image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}").replace("{ github.repository_owner }",r"{{ github.repository_owner }}").replace("{ secrets.GHCR_TOKEN }",r"{{ secrets.GHCR_TOKEN }}")
         with open(f".github/workflows/{github_cicd_image_name}_{image_version}.yml", "w", encoding='utf-8') as yamlfile:
             yamlfile.write(github_cicd_content)
     # print(f"create {image_name} github actions file")
