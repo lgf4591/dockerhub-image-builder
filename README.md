@@ -6,6 +6,10 @@ dockerhub-image-builder
 
 docker run --rm -it lgf4591/debian:latest zsh
 
+CR_PAT=XXXX
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+docker run --rm -it ghcr.io/lgf4591/alpine:latest zsh
+
 ```
 
 ## [devcontainers templates](https://github.com/devcontainers/templates)
