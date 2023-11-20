@@ -1,7 +1,7 @@
 
 import os
 
-devcontainer_images_need_to_build_map = {
+devcontainer_images_need_to_build_map1 = {
     "alpine": {
                 "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
                 "pkg_mgt": " apk ",
@@ -16,7 +16,7 @@ devcontainer_images_need_to_build_map = {
             },
 }
 
-devcontainer_images_need_to_build_map1 = {
+devcontainer_images_need_to_build_map = {
     "alpine": {
                 "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
                 "pkg_mgt": " apk ",
