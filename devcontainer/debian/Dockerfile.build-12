@@ -1,0 +1,16 @@
+
+FROM debian:12
+LABEL maintainer="lgf4591@outlook.com"
+
+USER root
+WORKDIR /root
+
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo '$TZ' > /etc/timezone
+
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list 
+
+RUN mkdir -p /workspace
+COPY ./devcontainer/debian/build.sh /workspace
+RUN  apt-get  update && export DEBIAN_FRONTEND=noninteractive     &&  apt-get  install -y  curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake  axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump 
+RUN sh /workspace/build.sh

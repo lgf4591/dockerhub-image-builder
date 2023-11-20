@@ -36,7 +36,7 @@ devcontainer_images_need_to_build_map = {
                 "image_info_dict": 
                     [
                         {
-                            "version": "11",
+                            "version": "12",
                             "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
                         }
                     ]
@@ -48,7 +48,7 @@ devcontainer_images_need_to_build_map = {
                 "image_info_dict": 
                     [
                         {
-                            "version": "22.04",
+                            "version": "20.04",
                             "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
                         }
                     ]

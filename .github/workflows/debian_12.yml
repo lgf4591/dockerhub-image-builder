@@ -1,0 +1,41 @@
+
+name: debian:12 Docker Image CI/CD
+on:
+  push:
+    branches: [ main ]
+    paths:   # 这里是用来指定哪个文件更改，才会触发的
+      - 'devcontainer/debian/Dockerfile.build-12'               # 包括路径
+      - 'devcontainer/debian/build.sh'                               # 包括路径
+      - '!docs/**'                                                  # 排除路径
+jobs:
+  # 构建并上传 Docker镜像
+  build: 
+    runs-on: ubuntu-latest # 依赖的环境      
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build DockerHub Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/debian:12 -f devcontainer/debian/Dockerfile.build-12 .
+
+      - name: Login to DockerHub Registry
+        # run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+        run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login --username ${{ secrets.DOCKER_USERNAME }}  --password-stdin
+
+      - name: Push DockerHub Image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/debian:12
+    
+      - name: Build GitHub Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/debian:12 -f devcontainer/debian/Dockerfile.build-12 .
+
+      - name: Login to GitHub Registry
+        # run: docker login ghcr.io --username=${{ github.repository_owner }} --password ${{ secrets.GHCR_TOKEN }}
+        run: echo '${{ secrets.GHCR_TOKEN }}' | docker login ghcr.io --username ${{ github.repository_owner }}  --password-stdin
+
+      - name: Push GitHub Image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/debian:12
+
+
