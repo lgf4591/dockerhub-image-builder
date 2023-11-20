@@ -1,8 +1,22 @@
 
 import os
 
-
 devcontainer_images_need_to_build_map = {
+    "alpine": {
+                "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
+                "pkg_mgt": " apk ",
+                "change_mirrir_command": "cp /etc/apk/repositories /etc/apk/repositories.bak && sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "latest",
+                            "special_need_install_pkgs": " fish neovim nano emacs fzf bat nnn ranger "
+                        }
+                    ]
+            },
+}
+
+devcontainer_images_need_to_build_map1 = {
     "alpine": {
                 "common_need_install_pkgs": " curl wget ca-certificates bash zsh tmux tcsh lsof procps git openssh-server net-tools vim make cmake automake busybox-extras build-base zlib-dev openssl-dev ",
                 "pkg_mgt": " apk ",
@@ -330,15 +344,32 @@ jobs:
     runs-on: ubuntu-latest # 依赖的环境      
     steps:
       - uses: actions/checkout@v2
-      - name: Build Image
+
+      - name: Build DockerHub Image
         run: |
-          docker build -t lgf4591/{}:{} -f devcontainer/{}/Dockerfile.build-{} .
-      - name: Login to Registry
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/{}:{} -f devcontainer/{}/Dockerfile.build-{} .
+
+      - name: Login to DockerHub Registry
         # run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
         run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login --username ${{ secrets.DOCKER_USERNAME }}  --password-stdin
-      - name: Push Image
+
+      - name: Push DockerHub Image
         run: |
-          docker push lgf4591/{}:{}
+          docker push ${{ secrets.DOCKER_USERNAME }}/{}:{}
+    
+      - name: Build GitHub Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/{}:{} -f devcontainer/{}/Dockerfile.build-{} .
+
+      - name: Login to GitHub Registry
+        # run: docker login ghcr.io --username=${{ github.repository_owner }} --password ${{ secrets.GHCR_TOKEN }}
+        run: echo '${{ secrets.GHCR_TOKEN }}' | docker login ghcr.io --username ${{ github.repository_owner }}  --password-stdin
+
+      - name: Push GitHub Image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/{}:{}
+
+
 """
 
 # print(devcontainer_image_version_map["ubuntu"])
@@ -369,7 +400,7 @@ for (image_name,image_infos) in devcontainer_images_need_to_build_map.items():
         with open(f"{folder}/Dockerfile.build-{image_version}", "w", encoding='utf-8') as dockerfile:
             dockerfile.write(dockerfile_content)
             
-        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}")
+        github_cicd_content = github_cicd_template.format(image_name, image_version, image_name, image_version, image_name, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version, image_name, image_version).replace("{ secrets.DOCKER_PASSWORD }",r"{{ secrets.DOCKER_PASSWORD }}").replace("{ secrets.DOCKER_USERNAME }", r"{{ secrets.DOCKER_USERNAME }}").replace("{ github.repository_owner }",r"{{ github.repository_owner }}").replace("{ secrets.GHCR_TOKEN }",r"{{ secrets.GHCR_TOKEN }}")
         with open(f".github/workflows/{github_cicd_image_name}_{image_version}.yml", "w", encoding='utf-8') as yamlfile:
             yamlfile.write(github_cicd_content)
     # print(f"create {image_name} github actions file")

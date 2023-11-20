@@ -13,12 +13,29 @@ jobs:
     runs-on: ubuntu-latest # 依赖的环境      
     steps:
       - uses: actions/checkout@v2
-      - name: Build Image
+
+      - name: Build DockerHub Image
         run: |
-          docker build -t lgf4591/alpine:latest -f devcontainer/alpine/Dockerfile.build-latest .
-      - name: Login to Registry
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/alpine:latest -f devcontainer/alpine/Dockerfile.build-latest .
+
+      - name: Login to DockerHub Registry
         # run: docker login --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
         run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login --username ${{ secrets.DOCKER_USERNAME }}  --password-stdin
-      - name: Push Image
+
+      - name: Push DockerHub Image
         run: |
-          docker push lgf4591/alpine:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/alpine:latest
+    
+      - name: Build GitHub Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/alpine:latest -f devcontainer/alpine/Dockerfile.build-latest .
+
+      - name: Login to GitHub Registry
+        # run: docker login ghcr.io --username=${{ github.repository_owner }} --password ${{ secrets.GHCR_TOKEN }}
+        run: echo '${{ secrets.GHCR_TOKEN }}' | docker login ghcr.io --username ${{ github.repository_owner }}  --password-stdin
+
+      - name: Push GitHub Image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/alpine:latest
+
+
