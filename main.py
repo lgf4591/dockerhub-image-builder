@@ -270,8 +270,36 @@ devcontainer_images_need_to_build_map = {
                         }
                     ]
             },
+    "continuumio/anaconda3": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "latest",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
+    "continuumio/miniconda3": {
+                "common_need_install_pkgs": " curl wget ca-certificates apt-transport-https ntp bash zsh tmux csh tcsh ksh telnet iputils-ping lsof procps git openssh-server net-tools vim make cmake automake ",
+                "pkg_mgt": " apt-get ",
+                "change_mirrir_command": "cp /etc/apt/sources.list /etc/apt/sources.list.bak && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list ",
+                "image_info_dict": 
+                    [
+                        {
+                            "version": "latest",
+                            "special_need_install_pkgs": " axel aria2 fish neovim nano emacs fzf fd-find bat nnn ranger autojump "
+                        }
+                    ]
+            },
 }
 
+# docker pull continuumio/miniconda3:latest
+# docker pull continuumio/miniconda2
+# docker pull continuumio/anaconda3
+# docker pull continuumio/anaconda2
 
 build_sh_template = """
 #! /bin/sh
